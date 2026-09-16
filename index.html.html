@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+<html lang="hu">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>Tomi &amp; Kitti · Meal Prep</title>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 0 0 40px 0;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px 12px;
+        }
+        header {
+            text-align: center;
+            padding: 24px 16px 16px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-bottom: 3px solid #f97316;
+            margin-bottom: 18px;
+        }
+        header h1 {
+            font-size: 2rem;
+            color: #f97316;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        header p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .stat-card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 14px 8px;
+            text-align: center;
+            border-left: 4px solid #f97316;
+        }
+        .stat-card .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .stat-card .sub {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+        .stat-card.tomi {
+            border-left-color: #60a5fa;
+        }
+        .stat-card.tomi .value {
+            color: #60a5fa;
+        }
+        .stat-card.kitti {
+            border-left-color: #ec4899;
+        }
+        .stat-card.kitti .value {
+            color: #ec4899;
+        }
+        .stat-card.budget {
+            border-left-color: #22c55e;
+        }
+        .stat-card.budget .value {
+            color: #22c55e;
+        }
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: 0.2s;
+            flex: 0 0 auto;
+        }
+        .tab-btn.active {
+            background: #f97316;
+            color: #0f172a;
+        }
+        .tab-btn:active {
+            transform: scale(0.96);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fade 0.25s ease;
+        }
+        @keyframes fade {
+            from {
+                opacity: 0.3;
+                transform: translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 18px 16px;
+            margin-bottom: 18px;
+            border: 1px solid #334155;
+        }
+        .card h3 {
+            color: #f97316;
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card h3 .arrow {
+            font-size: 1rem;
+            color: #94a3b8;
+            transition: 0.2s;
+        }
+        .card h3 .arrow.open {
+            transform: rotate(180deg);
+        }
+        .card .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin: 6px 0 12px;
+        }
+        .card .meta span {
+            background: #334155;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        .card h4 {
+            color: #60a5fa;
+            margin: 14px 0 4px;
+            font-size: 0.95rem;
+        }
+        .card ul,
+        .card ol {
+            padding-left: 18px;
+            margin: 4px 0 10px;
+            font-size: 0.9rem;
+        }
+        .card li {
+            margin-bottom: 3px;
+        }
+        .card .macro-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #0b1120;
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin: 8px 0 12px;
+        }
+        .card .macro-row span {
+            font-size: 0.85rem;
+        }
+        .card .macro-row .val {
+            color: #22c55e;
+            font-weight: 700;
+        }
+        .smoothie {
+            border-left: 4px solid #60a5fa;
+        }
+        .oats {
+            border-left: 4px solid #a855f7;
+        }
+        .snack {
+            border-left: 4px solid #ec4899;
+        }
+        .dinner {
+            border-left: 4px solid #f97316;
+        }
+        .dropdown-content {
+            display: none;
+            margin-top: 10px;
+            padding: 12px;
+            background: #0b1120;
+            border-radius: 12px;
+        }
+        .dropdown-content.open {
+            display: block;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 0;
+            border-bottom: 1px solid #1e293b;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #f97316;
+            cursor: pointer;
+        }
+        .checkbox-item label {
+            font-size: 0.9rem;
+            flex: 1;
+        }
+        .checkbox-item .price {
+            font-weight: 600;
+            color: #22c55e;
+            font-size: 0.85rem;
+        }
+        .week-selector {
+            background: #1e293b;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .week-selector select {
+            background: #0b1120;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            flex: 1;
+            min-width: 120px;
+        }
+        .week-selector .current-week {
+            font-weight: 600;
+            color: #f97316;
+            font-size: 0.9rem;
+        }
+        .budget-bar {
+            background: #334155;
+            height: 24px;
+            border-radius: 30px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .budget-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e, #f97316);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #0f172a;
+        }
+        .shop-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .shop-table th {
+            text-align: left;
+            padding: 6px 8px;
+            background: #334155;
+        }
+        .shop-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #334155;
+        }
+        .shop-table .price {
+            color: #22c55e;
+            font-weight: 500;
+        }
+        .shop-table .total td {
+            font-weight: 700;
+            border-top: 2px solid #f97316;
+            padding-top: 10px;
+        }
+        .note {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .highlight {
+            color: #f97316;
+            font-weight: 600;
+        }
+        .timeline-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .timeline-toggle button {
+            background: #334155;
+            border: none;
+            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .timeline-toggle button.active {
+            background: #f97316;
+            color: #0f172a;
+        }
+        .timeline-day {
+            background: #0b1120;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            border-left: 4px solid #f97316;
+        }
+        .timeline-day .day-name {
+            font-weight: 700;
+            color: #f97316;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .timeline-day .day-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            font-size: 0.9rem;
+        }
+        .timeline-day .day-items .item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .timeline-day .day-items .item .label {
+            color: #94a3b8;
+        }
+        .timeline-day .day-items .item a {
+            color: #60a5fa;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .timeline-day .day-items .item a:hover {
+            color: #f97316;
+        }
+        .timeline-day .day-items .item .icon {
+            font-size: 1.1rem;
+        }
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stats .stat-card:last-child {
+                grid-column: span 2;
+            }
+            header h1 {
+                font-size: 1.5rem;
+            }
+            .tab-btn {
+                font-size: 0.75rem;
+                padding: 6px 10px;
+            }
+            .week-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    
+/* Dobozolási panel – mobilbarát, nem takar rá semmire */
+.calc-box{
+  margin-top:18px;
+  padding:16px 15px;
+  border:1px solid rgba(61,157,179,.45);
+  border-radius:16px;
+  background:rgba(15,23,42,.72);
+  box-sizing:border-box;
+  width:100%;
+  overflow:hidden;
+}
+.calc-box h4{margin:0 0 12px;color:#3d9db3;font-size:1rem;}
+.calc-box p{margin:8px 0;line-height:1.5;overflow-wrap:anywhere;word-break:normal;}
+.calc-box .calc-example{
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.10);
+}
+@media (max-width:600px){
+  .calc-box{padding:14px 13px;}
+  .calc-box p{font-size:.92rem;}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>🏋️ Tomi  ❤️  Kitti</h1>
+<p>Heti meal prep · vasárnap + szerda főzés · automatikus váltás · bevásárlólista</p>
+</header>
+<div class="container">
+<!-- STATISZTIKA -->
+<div class="stats">
+<div class="stat-card tomi">
+<div class="label">🔥 Tomi</div>
+<div class="value">3000</div>
+<div class="sub">kcal · 180g feh.</div>
+</div>
+<div class="stat-card kitti">
+<div class="label">🎯 Kitti</div>
+<div class="value">1400</div>
+<div class="sub">kcal · 110g feh.</div>
+</div>
+<div class="stat-card budget">
+<div class="label">💰 Havi</div>
+<div class="value">~240</div>
+<div class="sub">EUR (ketten) · 4 hét</div>
+</div>
+</div>
+<div class="card"><h3 style="cursor:default;">📊 Napi cél – hogyan jön ki?</h3><p class="note">Tomi: főétel + nagy turmix + zabos snack + vacsora → jellemzően <strong>~2900-3100 kcal / ~180-200g fehérje</strong>.</p><p class="note">Kitti: főétel + Oats + kis fehérjedús snack + vacsora → jellemzően <strong>~1300-1450 kcal / ~110-125g fehérje</strong>.</p><p class="note">A makrók márkánként változnak, ezért kisebb eltérés normális.</p></div>
+<!-- HÉT VÁLASZTÓ -->
+<div class="week-selector">
+<span class="current-week" id="weekDisplay">1. hét</span>
+<select id="weekSelect">
+<option value="0">1. hét</option>
+<option value="1">2. hét</option>
+<option value="2">3. hét</option>
+<option value="3">4. hét</option>
+<option value="4">5. hét</option>
+</select>
+</div>
+<!-- FÜLEK -->
+<div class="tabs">
+<button class="tab-btn active" onclick="window.showTab('receptek', this)">🍽️ Receptek</button>
+<button class="tab-btn" onclick="window.showTab('turmixok', this)">🥤 Turmix</button>
+<button class="tab-btn" onclick="window.showTab('oats', this)">🌙 Oats</button>
+<button class="tab-btn" onclick="window.showTab('snack', this)">🍰 Snack</button>
+<button class="tab-btn" onclick="window.showTab('vacsora', this)">🌙 Vacsora</button>
+<button class="tab-btn" onclick="window.showTab('bevasarlas', this)">🛒 Bevásárlás</button>
+<button class="tab-btn" onclick="window.showTab('koltseg', this)">💶 Költség</button>
+</div>
+<!-- ==================== RECEPTEK ==================== -->
+<div class="tab-content active" id="receptek">
+<!-- IDŐVONAL BLOKK -->
+<div class="card" id="weekly-timeline" style="border-left: 4px solid #f97316;">
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+<h3 style="margin:0; color:#f97316; font-size:1.1rem;">📅 Napi teendők</h3>
+<div class="timeline-toggle" id="timelineToggle">
+<button class="active" onclick="window.setTimelineView('current', this)">Aktuális blokk (3 nap)</button>
+<button onclick="window.setTimelineView('full', this)">Teljes hét (7 nap)</button>
+</div>
+</div>
+<div id="timelineContent"></div>
+</div>
+<!-- FŐÉTELEK (R1–R5) -->
+<div class="card" data-recipe="R1"><h3 onclick="window.toggleDropdown(this)">R1 – Mézes BBQ Csirkés Mac &amp; Cheese <span class="arrow">▼</span></h3><div class="meta"><span>⏱️ 35-40 perc</span><span>🔥 serpenyő + lábas</span><span>🍗 csirkemell</span></div><div class="macro-row"><span>🔥 <span class="val">~790</span> kcal / Tomi</span><span>💪 <span class="val">~66</span>g feh.</span><span>🎯 <span class="val">~550</span> kcal / Kitti</span><span>💪 <span class="val">~54</span>g feh.</span></div><h4>Teljes mennyiség – 3 Tomi + 3 Kitti doboz</h4><ul><li>Csirkemell, nyersen: <strong>1050g</strong></li><li>Makaróni, szárazon: <strong>480g</strong></li><li>Párolt tej: <strong>120ml</strong></li><li>Light krémsajt: <strong>120g</strong></li><li>Light cheddar: <strong>150g</strong></li><li>BBQ szósz: <strong>128g</strong></li><li>Méz: <strong>38g</strong></li><li>Olívaolaj: <strong>8ml</strong></li><li>Fokhagymapor 5g · hagymapor 5g · füstölt paprika 5g · só 10g</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><ol><li>A csirkét 2-3cm-es kockákra vágd, keverd össze a sóval és fűszerekkel.</li><li>8ml olajon, közepesen magas hőfokon, 2 adagban süsd <strong>4-5 percig/adag</strong>. A belső hőmérséklet érje el a 74°C-ot.</li><li>Vedd lejjebb a hőt, add hozzá a BBQ szószt és mézet, majd 1-2 perc alatt forgasd össze.</li><li>A makarónit sós, lobogó vízben a csomagolás szerinti ideig főzd, majd szűrd le.</li><li>A párolt tejet melegítsd alacsony-közepes hőfokon. Keverd bele a krémsajtot és a reszelt cheddart, 2-3 perc alatt simítsd el.</li><li>Keverd össze a tésztát a sajtszósszal.</li><li><strong>Dobozolás:</strong> a kész csirkéből Tomi-dobozonként a teljes kész csirke 17,14%-a, Kitti-dobozonként 16,19%-a. A kész mac &amp; cheese-ből Tomi-dobozonként 20,83%, Kitti-dobozonként 12,50%.</li><li>Pontos dobozolás: ha a kész csirke összesen X g, Tomi-doboz = X×180/1050, Kitti-doboz = X×170/1050. Ha a kész mac &amp; cheese összesen Y g, Tomi-doboz = Y×100/480, Kitti-doboz = Y×60/480. Így a 3 Tomi + 3 Kitti doboz mindig pontosan elfogyasztja a teljes főtt adagot.</li></ol><div class="calc-box">
+<h4>📦 Dobozolási számítás</h4>
+<p><b>Főzés után:</b> mérd le külön a kész csirkét és külön a kész Mac &amp; Cheese-t.</p>
+<p><b>Csirke (1050 g nyers):</b> Tomi = kész csirke × 180 / 1050 · Kitti = kész csirke × 170 / 1050</p>
+<p><b>Mac &amp; Cheese (480 g száraz tészta):</b> Tomi = kész étel × 100 / 480 · Kitti = kész étel × 60 / 480</p>
+<p class="calc-example"><b>Példa:</b> 800 g kész csirke esetén Tomi ≈ 137 g/doboz, Kitti ≈ 130 g/doboz.</p>
+</div></div></div>
+<div class="card" data-recipe="R2"><h3 onclick="window.toggleDropdown(this)">R2 – Mézes-fokhagymás Csirke + Rizs <span class="arrow">▼</span></h3><div class="meta"><span>⏱️ 30 perc</span><span>🔥 serpenyő</span><span>🍗 csirkemell</span></div><div class="macro-row"><span>🔥 <span class="val">~640</span> kcal / Tomi</span><span>💪 <span class="val">~51</span>g feh.</span><span>🎯 <span class="val">~505</span> kcal / Kitti</span><span>💪 <span class="val">~47</span>g feh.</span></div><h4>Teljes mennyiség – 3 Tomi + 3 Kitti doboz</h4><ul><li>Csirkemell, nyersen: <strong>1050g</strong></li><li>Basmati rizs, szárazon: <strong>480g</strong></li><li>Mirelit zöldség: <strong>480g</strong></li><li>Olívaolaj: <strong>30ml</strong></li><li>Méz: <strong>60g</strong></li><li>Szójaszósz: <strong>60ml</strong></li><li>Fokhagyma 15g · fokhagymapor 3g · bors 2g</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><ol><li>A csirkét falatnyi darabokra vágd, fűszerezd.</li><li>15ml olajon, közepesen magas hőfokon süsd <strong>8-10 percig</strong>.</li><li>Keverd össze a mézet, szójaszószt és fokhagymát, öntsd a csirkére, majd <strong>2-3 percig</strong> forgasd össze.</li><li>A rizst öblítsd át, kb. 1:2 vízzel főzd <strong>12-15 percig</strong>, majd 5 percig pihentesd.</li><li>A zöldséget a maradék 15ml olajon <strong>6-8 percig</strong> pirítsd.</li><li><strong>Dobozonként:</strong> Tomi kb. 130-140g sült csirke + 250-270g főtt rizs + 60g zöldség. Kitti kb. 125-130g csirke + 150-165g főtt rizs + 100g zöldség.</li><li>A főzés utáni súlyt mindig mérd le; a dobozok grammját a fenti arányból számold, ne egy előre feltételezett főtt súlyból.</li></ol><div class="calc-box">
+<h4>📦 Dobozolási számítás</h4>
+<p><b>Főzés után:</b> mérd le külön a kész csirkét, rizst és zöldséget.</p>
+<p><b>Csirke (1050 g nyers):</b> Tomi = kész csirke × 180 / 1050 · Kitti = kész csirke × 170 / 1050</p>
+<p><b>Rizs (480 g száraz):</b> Tomi = kész rizs × 100 / 480 · Kitti = kész rizs × 60 / 480</p>
+<p><b>Zöldség (480 g):</b> Tomi = kész zöldség × 60 / 480 · Kitti = kész zöldség × 100 / 480</p>
+<p class="calc-example"><b>Példa:</b> 800 g kész csirke esetén Tomi ≈ 137 g/doboz, Kitti ≈ 130 g/doboz.</p>
+</div></div></div>
+<div class="card" data-recipe="R3"><h3 onclick="window.toggleDropdown(this)">R3 – Darált Marhás Paradicsomos Penne <span class="arrow">▼</span></h3><div class="meta"><span>⏱️ 30-35 perc</span><span>🔥 serpenyő + lábas</span><span>🥩 darált marha</span></div><div class="macro-row"><span>🔥 <span class="val">~710</span> kcal / Tomi</span><span>💪 <span class="val">~54</span>g feh.</span><span>🎯 <span class="val">~490</span> kcal / Kitti</span><span>💪 <span class="val">~37</span>g feh.</span></div><h4>Teljes mennyiség – 3 Tomi + 3 Kitti doboz</h4><ul><li>5%-os darált marha, nyersen: <strong>900g</strong></li><li>Penne, szárazon: <strong>420g</strong></li><li>Passata: <strong>500g</strong></li><li>Vöröshagyma: <strong>200g</strong></li><li>Olívaolaj: <strong>20ml</strong></li><li>Parmezán: <strong>60g</strong></li><li>Mozzarella: <strong>150g</strong></li><li>Fokhagyma 15g · oregánó 3g · bazsalikom 3g · só 8g · bors 2g</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><ol><li>A marhát forró serpenyőben az olajon <strong>8-10 percig</strong> pirítsd, közben morzsold szét.</li><li>Add hozzá a hagymát és fokhagymát, majd <strong>4-5 percig</strong> párold.</li><li>Öntsd hozzá a passatát és a fűszereket, alacsony hőfokon <strong>10 percig</strong> rotyogtasd.</li><li>A pennét sós vízben a csomagolás szerint főzd meg.</li><li>Keverd össze a tésztát a szósszal, add hozzá a parmezánt, majd a mozzarellát.</li><li><strong>Dobozonként:</strong> Tomi kb. 135g kész marhahús + kb. 400g kész tészta-szósz; Kitti kb. 90g hús + kb. 225g kész tészta-szósz.</li><li>Ez 20% kész hús / Tomi-doboz és 13,33% / Kitti-doboz; a tészta-szósz 64,29% / 35,71% Tomi/Kitti összesen, vagyis 21,43% / 11,90% dobozonként.</li></ol><div class="calc-box">
+<h4>📦 Dobozolási számítás</h4>
+<p><b>Főzés után:</b> mérd le külön a kész darált marhát és külön a kész penne + szószt.</p>
+<p><b>Marha (900 g nyers):</b> Tomi = kész marha × 180 / 900 · Kitti = kész marha × 120 / 900</p>
+<p><b>Penne + szósz (420 g száraz penne):</b> Tomi = kész étel × 90 / 420 · Kitti = kész étel × 50 / 420</p>
+<p class="calc-example"><b>Példa:</b> 800 g kész marha esetén Tomi ≈ 160 g/doboz, Kitti ≈ 107 g/doboz.</p>
+</div></div></div>
+<div class="card" data-recipe="R4"><h3 onclick="window.toggleDropdown(this)">R4 – Sajtos Csirkés Tepsis Burgonya <span class="arrow">▼</span></h3><div class="meta"><span>⏱️ 45 perc</span><span>🔥 sütő 200°C</span><span>🍗 csirkemell</span></div><div class="macro-row"><span>🔥 <span class="val">~575</span> kcal / Tomi</span><span>💪 <span class="val">~59</span>g feh.</span><span>🎯 <span class="val">~495</span> kcal / Kitti</span><span>💪 <span class="val">~55</span>g feh.</span></div><h4>Teljes mennyiség – 3 Tomi + 3 Kitti doboz</h4><ul><li>Csirkemell, nyersen: <strong>1050g</strong></li><li>Burgonya, nyersen: <strong>1500g</strong></li><li>Zsírszegény túró: <strong>300g</strong></li><li>Light cheddar: <strong>120g</strong></li><li>Mirelit brokkoli/zöldség: <strong>300g</strong></li><li>Olívaolaj: <strong>20ml</strong></li><li>Fokhagymapor 5g · pirospaprika 5g · oregánó 3g · só 10g · bors 2g</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><ol><li>A sütőt melegítsd elő <strong>200°C-ra</strong> (légkeverésnél 190°C).</li><li>A burgonyát 2cm-es kockákra vágd, keverd össze az olaj felével és a fűszerekkel. Sütőpapíron süsd <strong>20 percig</strong>, majd forgasd át.</li><li>A csirkét kockázd fel, fűszerezd, tedd a tepsire, majd süsd további <strong>15-18 percig</strong>. Belső hő: 74°C.</li><li>A brokkolit az utolsó 8-10 percre add hozzá.</li><li>A zsírszegény túrót keverd össze 60g reszelt cheddarral; a maradék 60g sajtot a végén szórd rá.</li><li><strong>Pontos dobozolás:</strong> kész csirke = Tomi X×180/1050, Kitti X×170/1050. A kész burgonya+brokkoli köretet a 300/200g nyers burgonyaarány szerint oszd: Tomi Y×300/1500, Kitti Y×200/1500. A 300g zsírszegény túró + 60g cheddar szószból 60g jusson minden dobozba; a külön maradó 60g cheddar = 10g minden dobozra.</li><li>A kész komponenseket külön mérd: csirke, köret, sajtos-zsírszegény túró szósz és a tetejére kerülő cheddar. Így nincs rejtett plusz/mínusz a dobozok között.</li></ol><div class="calc-box">
+<h4>📦 Dobozolási számítás</h4>
+<p><b>Főzés után:</b> mérd le külön a kész csirkét és a kész burgonyát. A sajtos-zsírszegény túró részt külön adagold.</p>
+<p><b>Csirke (1050 g nyers):</b> Tomi = kész csirke × 180 / 1050 · Kitti = kész csirke × 170 / 1050</p>
+<p><b>Burgonya (1500 g nyers):</b> Tomi = kész burgonya × 300 / 1500 · Kitti = kész burgonya × 200 / 1500</p>
+<p><b>Sajtos-zsírszegény túró:</b> 60 g/doboz + 10 g cheddar/doboz a tetejére.</p>
+<p class="calc-example"><b>Példa:</b> 800 g kész csirke esetén Tomi ≈ 137 g/doboz, Kitti ≈ 130 g/doboz.</p>
+</div></div></div>
+<div class="card" data-recipe="R5"><h3 onclick="window.toggleDropdown(this)">R5 – Krémes Paradicsomos Csirke Penne <span class="arrow">▼</span></h3><div class="meta"><span>⏱️ 30-35 perc</span><span>🔥 serpenyő + lábas</span><span>🍗 csirkemell</span></div><div class="macro-row"><span>🔥 <span class="val">~675</span> kcal / Tomi</span><span>💪 <span class="val">~64</span>g feh.</span><span>🎯 <span class="val">~475</span> kcal / Kitti</span><span>💪 <span class="val">~55</span>g feh.</span></div><h4>Teljes mennyiség – 3 Tomi + 3 Kitti doboz</h4><ul><li>Csirkemell, nyersen: <strong>1050g</strong></li><li>Penne, szárazon: <strong>420g</strong></li><li>Passata: <strong>500g</strong></li><li>Zsírszegény túró: <strong>200g</strong></li><li>Mozzarella: <strong>100g</strong></li><li>Mirelit spenót/zöldség: <strong>200g</strong></li><li>Olívaolaj: <strong>20ml</strong></li><li>Fokhagyma 15g · bazsalikom 3g · oregánó 3g · só 8g · bors 2g</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><ol><li>A csirkét kockázd fel, sózd-borsozd, az olaj felén pirítsd <strong>8-10 percig</strong>, majd vedd ki.</li><li>A fokhagymát és a spenótot/zöldséget 4-5 percig párold.</li><li>Add hozzá a passatát és fűszereket, majd alacsony hőfokon <strong>8-10 percig</strong> főzd.</li><li>A pennét külön főzd meg a csomagolás szerint.</li><li>Vedd le a szószt a magas hőről, keverd bele a 200g zsírszegény túrót és 100g mozzarellát. Ne forrald erősen.</li><li>Keverd bele a tésztát és a csirkét; kevés főzővízzel lazítsd, ha szükséges.</li><li><strong>Dobozonként:</strong> Tomi kb. 135-140g kész csirke + 400g kész tészta-szósz; Kitti kb. 125-130g csirke + 210-230g tészta-szósz.</li><li>A főzés utáni súlyt mérd le, majd a 180/170g nyers csirke- és 300/120g száraz tésztaarányból számold a 3+3 dobozt.</li></ol><div class="calc-box">
+<h4>📦 Dobozolási számítás</h4>
+<p><b>Főzés után:</b> mérd le külön a kész csirkét és külön a kész penne + szószt.</p>
+<p><b>Csirke (1050 g nyers):</b> Tomi = kész csirke × 180 / 1050 · Kitti = kész csirke × 170 / 1050</p>
+<p><b>Penne + szósz (420 g száraz penne):</b> Tomi = kész étel × 100 / 420 · Kitti = kész étel × 40 / 420</p>
+<p class="calc-example"><b>Példa:</b> 1200 g kész penne + szósz esetén Tomi ≈ 286 g/doboz, Kitti ≈ 114 g/doboz.</p>
+</div></div></div>
+</div>
+<!-- ==================== TURMIXOK ==================== -->
+<div class="tab-content" id="turmixok"><div class="card smoothie"><h3 onclick="window.toggleDropdown(this)">🥤 Csokis-Banános-Mogyorós <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~1025</span> kcal</span><span>💪 <span class="val">~59</span>g feh.</span></div><ul><li>30g csokis fehérjepor</li><li>200g banán</li><li>70g zabpehely</li><li>30g mogyoróvaj</li><li>350ml tej 3,5%</li><li>10g kakaópor</li><li>10g méz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>Turmixold az összes hozzávalót 45-60 másodpercig. Ha túl sűrű, 30-50ml vízzel hígítsd.</p></div></div>
+<div class="card smoothie"><h3 onclick="window.toggleDropdown(this)">🥤 Epres-Túrós-Zabos <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~790</span> kcal</span><span>💪 <span class="val">~63</span>g feh.</span></div><ul><li>30g vaníliás fehérjepor</li><li>200g fagyasztott eper</li><li>150g zsírszegény túró</li><li>50g zabpehely</li><li>300ml tej</li><li>15g méz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>Turmixold 45-60 másodpercig. A zabot és epret a végén add hozzá, majd teljesen simára turmixold.</p></div></div>
+<div class="card smoothie"><h3 onclick="window.toggleDropdown(this)">🥤 Kávés-Tiramisu <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~740</span> kcal</span><span>💪 <span class="val">~63</span>g feh.</span></div><ul><li>30g vaníliás fehérjepor</li><li>200ml hideg erős kávé</li><li>150g zsírszegény túró</li><li>70g zabpehely</li><li>100g banán</li><li>15g kakaópor</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>A teljesen kihűlt kávét minden hozzávalóval 45 másodpercig turmixold.</p></div></div>
+<div class="card smoothie"><h3 onclick="window.toggleDropdown(this)">🥤 Mogyorós-Banános <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~1000</span> kcal</span><span>💪 <span class="val">~58</span>g feh.</span></div><ul><li>30g csokis fehérjepor</li><li>35g mogyoróvaj</li><li>70g zabpehely</li><li>200g banán</li><li>350ml tej 3,5%</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>Turmixold 45-60 másodpercig. Azonnal fogyasztható.</p></div></div></div>
+</div>
+<!-- ==================== OVERNIGHT OATS ==================== -->
+<div class="tab-content" id="oats"><div class="card oats"><h3 onclick="window.toggleDropdown(this)">🌙 Epres-chia Oats <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~457</span> kcal</span><span>💪 <span class="val">~26</span>g feh.</span></div><ul><li>40g zab</li><li>150ml tej</li><li>100g eper</li><li>100g zsírszegény túró</li><li>10g chia</li><li>5g méz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>Mindent keverj össze, zárd le és hűtsd legalább 6 órát.</p></div></div>
+<div class="card oats"><h3 onclick="window.toggleDropdown(this)">🌙 Kókuszos-mandulás Oats <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~357</span> kcal</span><span>💪 <span class="val">~24</span>g feh.</span></div><ul><li>40g zab</li><li>150ml tej</li><li>100g zsírszegény túró</li><li>10g kókusz</li><li>15g mandula</li><li>5g méz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>Keverd össze, majd 6-12 órára tedd hűtőbe.</p></div></div>
+<div class="card oats"><h3 onclick="window.toggleDropdown(this)">🌙 Csokis-banános Oats <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~467</span> kcal</span><span>💪 <span class="val">~27</span>g feh.</span></div><ul><li>40g zab</li><li>150ml tej</li><li>100g banán</li><li>100g zsírszegény túró</li><li>10g kakaó</li><li>5g méz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>A banánt pépesítsd, mindent keverj össze, majd 6-12 órát hűtsd.</p></div></div>
+<div class="card oats"><h3 onclick="window.toggleDropdown(this)">🌙 Almás-fahéjas Oats <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~417</span> kcal</span><span>💪 <span class="val">~24</span>g feh.</span></div><ul><li>40g zab</li><li>150ml tej</li><li>120g alma</li><li>100g zsírszegény túró</li><li>2g fahéj</li><li>5g méz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>Reszeld le az almát, keverd össze mindennel, majd 6-12 órát hűtsd.</p></div></div></div>
+
+<!-- ==================== SNACK ==================== -->
+<div class="tab-content" id="snack"><div class="card snack"><h3 onclick="window.toggleDropdown(this)">🍌 Tomi – Banános-mogyoróvajas zabpuding <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~790</span> kcal</span><span>💪 <span class="val">~32</span>g feh.</span></div><ul><li>80g zab</li><li>300ml tej</li><li>30g mogyoróvaj</li><li>120g banán</li><li>10g méz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>A zabot és tejet közepes hőfokon 4-6 percig főzd. Vedd le, keverd bele a mogyoróvajat és mézet, majd tedd rá a banánt.</p></div></div>
+<div class="card snack"><h3 onclick="window.toggleDropdown(this)">🍓 Kitti – Zsírszegény túró &amp; bogyós pohárkrém <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~259</span> kcal</span><span>💪 <span class="val">~24</span>g feh.</span></div><ul><li>200g zsírszegény túró</li><li>100g bogyós gyümölcs</li><li>10g méz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>A zsírszegény túrót keverd össze a mézzel, rétegezd a kiengedett gyümölccsel.</p></div></div></div>
+
+<!-- ==================== VACSORA ==================== -->
+<div class="tab-content" id="vacsora"><h3 style="color:#60a5fa; margin:12px 0 8px;">🔥 Tomi vacsorái</h3><div class="card dinner"><h3 onclick="window.toggleDropdown(this)">1. Zabkása + fehérjepor + mogyoróvaj + banán <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~765</span> kcal</span><span>💪 <span class="val">~50</span>g feh.</span></div><ul><li>80g zab</li><li>30g fehérjepor</li><li>20g mogyoróvaj</li><li>100g banán</li><li>200ml tej</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>A zabot tejjel 4-5 percig főzd. Vedd le, keverd bele a fehérjeport és mogyoróvajat, a banánt tedd rá.</p></div></div><div class="card dinner"><h3 onclick="window.toggleDropdown(this)">2. Túrós zabkása + méz <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~610</span> kcal</span><span>💪 <span class="val">~47</span>g feh.</span></div><ul><li>70g zab</li><li>150g zsírszegény túró</li><li>15g fehérjepor</li><li>15g méz</li><li>150ml tej</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>A zabot és tejet 4-5 percig főzd. 2 perc hűlés után keverd bele a túrót és fehérjeport, végül a mézet.</p></div></div><div class="card dinner"><h3 onclick="window.toggleDropdown(this)">3. Tojásos rizs + túró + zöldség <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~525</span> kcal</span><span>💪 <span class="val">~32</span>g feh.</span></div><ul><li>70g száraz rizs</li><li>3 tojás (150g)</li><li>100g zsírszegény túró</li><li>150g mirelit zöldség</li><li>10ml olívaolaj</li><li>15ml szójaszósz</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><ol><li>A zöldséget 5-6 percig pirítsd.</li><li>Add hozzá a kb. 180g főtt rizst.</li><li>Üsd rá a tojásokat és 3-4 percig kevergesd.</li><li>Vedd le a tűzről, keverd bele a túrót és szójaszószt.</li></ol></div></div><h3 style="color:#ec4899; margin:20px 0 8px;">🎯 Kitti vacsorái</h3><div class="card dinner" style="border-left-color:#ec4899;"><h3 onclick="window.toggleDropdown(this)">1. Túró + bogyós <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~229</span> kcal</span><span>💪 <span class="val">~24</span>g feh.</span></div><ul><li>200g zsírszegény túró</li><li>100g bogyós gyümölcs</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>Keverd össze és hűtve fogyaszd.</p></div></div><div class="card dinner" style="border-left-color:#ec4899;"><h3 onclick="window.toggleDropdown(this)">2. Túrókrém + alma <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~225</span> kcal</span><span>💪 <span class="val">~26</span>g feh.</span></div><ul><li>150g zsírszegény túró</li><li>10g fehérjepor</li><li>100g alma</li><li>1g fahéj</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>A túrót keverd simára a fehérjeporral és fahéjjal, az almát kockázd rá.</p></div></div><div class="card dinner" style="border-left-color:#ec4899;"><h3 onclick="window.toggleDropdown(this)">3. Tojásos-zöldséges omlett <span class="arrow">▼</span></h3><div class="macro-row"><span>🔥 <span class="val">~170</span> kcal</span><span>💪 <span class="val">~15</span>g feh.</span></div><ul><li>2 tojás (100g)</li><li>100g mirelit zöldség</li><li>50g zsírszegény túró</li><li>5ml olívaolaj</li></ul><div class="dropdown-content"><h4>Elkészítés</h4><p>A zöldséget 4-5 percig pirítsd, öntsd rá a felvert tojást, 3-4 perc alatt süsd át, végül add hozzá a túrót.</p></div></div><div class="card" style="border-left:4px solid #a855f7;"><h3 style="color:#a855f7;">📅 Heti vacsora beosztás</h3><p class="note">3 napos blokkokban váltva.</p><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; font-size:0.9rem;"><div><strong style="color:#60a5fa;">Tomi</strong></div><div><strong style="color:#ec4899;">Kitti</strong></div><div>Hétfő: Zabkása</div><div>Hétfő: Túró + bogyós</div><div>Kedd: Túrós zabkása</div><div>Kedd: Túrókrém + alma</div><div>Szerda: Tojásos rizs</div><div>Szerda: Omlett</div><div>Csütörtök: Zabkása</div><div>Csütörtök: Túró + bogyós</div><div>Péntek: Túrós zabkása</div><div>Péntek: Túrókrém + alma</div><div>Szombat: Tojásos rizs</div><div>Szombat: Omlett</div><div>Vasárnap: Zabkása</div><div>Vasárnap: Túró + bogyós</div></div></div></div>
+
+<!-- ==================== BEVÁSÁRLÓLISTA ==================== -->
+<div class="tab-content" id="bevasarlas"><div class="card"><h3>🛒 Heti bevásárlólista</h3><p class="note">A kiválasztott hét két főételét + 7 nap turmix/oats/snack/vacsora alapanyagait tartalmazza. Az azonos alapanyagok össze vannak adva; a lista a felhasználandó heti mennyiséget és a hozzá tartozó tervezési költséget mutatja. A tartós alapanyagokat nem kell minden héten újravenni.</p><div id="shoppingList"></div></div><div class="card"><h4>⚖️ Mérési szabály</h4><p class="note">Hús = <strong>nyers súly</strong>. Rizs és tészta = <strong>száraz súly</strong>. Főzés után mérd le a kész komponenseket, majd a receptben megadott arány szerint oszd 3 Tomi + 3 Kitti dobozba.</p></div></div>
+
+<!-- ==================== KÖLTSÉGVETÉS ==================== -->
+<div class="tab-content" id="koltseg"><div class="card"><h3>💶 Havi költségvetés (2 fő)</h3><p class="note">A költség most <strong>felhasznált mennyiség alapján</strong> van számolva, nem úgy, mintha minden héten minden bontatlan csomagot újra megvennél. Az árak kerekített Lidl-tervezési árak; akció és márka változtathat rajtuk.</p><div class="budget-bar"><div class="budget-fill" style="width:100%;">~250–270 EUR / 4 hét</div></div><p style="color:#f97316;">A 200–250 € cél nagyon szoros ennél a napi ~4400 kcal-os, magas fehérjetartalmú tervnél. A Skyr helyett zsírszegény túróval csökkentettük a költséget.</p></div><div class="card"><h4>📊 Reális 4 hetes becslés</h4><table class="shop-table"><tr><th>Kategória</th><th>4 hét</th></tr><tr><td>🍗 Húsok</td><td class="price">~50–60 €</td></tr><tr><td>🍚 Rizs, tészta, zab, burgonya</td><td class="price">~15–20 €</td></tr><tr><td>🥛 Tejtermékek, tojás</td><td class="price">~65–75 €</td></tr><tr><td>🥦 Zöldség, gyümölcs</td><td class="price">~45–55 €</td></tr><tr><td>🥜 Mogyoróvaj, méz, szószok, fűszerek</td><td class="price">~20–25 €</td></tr><tr><td>💪 Fehérjepor</td><td class="price">~30–35 €</td></tr><tr style="background:#2a3a4a;"><td><strong>ÖSSZESEN</strong></td><td class="price"><strong>~250–270 €</strong></td></tr></table><p class="note">A csomagvásárlás első hónapban ennél magasabb lehet, mert egyszerre kell megvenni például olajat, mézet, fűszereket és fehérjeport; ezekből több hétre is marad.</p></div></div>
+
+<script>
+        // ============================
+        // TABOK KEZELÉSE (egyszerű, külön)
+        // ============================
+        window.showTab = function(tabId, btn) {
+            // Összes tab tartalmát elrejteni
+            var contents = document.querySelectorAll('.tab-content');
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove('active');
+            }
+            // A kiválasztottat megjeleníteni
+            var target = document.getElementById(tabId);
+            if (target) {
+                target.classList.add('active');
+            }
+
+            // Összes gombról eltávolítani az aktív osztályt
+            var btns = document.querySelectorAll('.tab-btn');
+            for (var j = 0; j < btns.length; j++) {
+                btns[j].classList.remove('active');
+            }
+            // A lenyomott gombra active
+            if (btn) {
+                btn.classList.add('active');
+            } else {
+                // Ha nincs btn, keresd a megfelelő gombot
+                for (var k = 0; k < btns.length; k++) {
+                    if (btns[k].getAttribute('onclick') && btns[k].getAttribute('onclick').indexOf(tabId) !== -1) {
+                        btns[k].classList.add('active');
+                        break;
+                    }
+                }
+            }
+        };
+
+        // ============================
+        // DROPDOWN (legördülő recept részletek)
+        // ============================
+        window.toggleDropdown = function(el) {
+            var content = el.parentElement.querySelector('.dropdown-content');
+            var arrow = el.querySelector('.arrow');
+            if (content) {
+                content.classList.toggle('open');
+                if (arrow) arrow.classList.toggle('open');
+            }
+        };
+
+        // ============================
+        // ADATOK A HÉTVÁLTÁSHOZ ÉS IDŐVONALHOZ
+        // ============================
+        var recipeCycle=[['R1','R2'],['R3','R4'],['R5','R1'],['R2','R3'],['R4','R5']];
+var recipeNames={'R1':'Mézes BBQ Csirkés Mac & Cheese','R2':'Mézes-fokhagymás Csirke + Rizs','R3':'Darált Marhás Paradicsomos Penne','R4':'Sajtos Csirkés Tepsis Burgonya','R5':'Krémes Paradicsomos Csirke Penne'};
+var recipeShopping={
+'R1':[['Csirkemell',1050,'g',5.25],['Makaróni',480,'g',0.80],['Párolt tej',120,'ml',1.20],['Light krémsajt',120,'g',1.00],['Light cheddar',150,'g',1.90],['BBQ szósz',128,'g',1.50],['Méz',38,'g',0.27],['Olívaolaj',8,'ml',0.00],['Fokhagymapor',5,'g',0.00],['Hagymapor',5,'g',0.00],['Füstölt paprika',5,'g',0.00],['Só',10,'g',0.00]],
+'R2':[['Csirkemell',1050,'g',5.25],['Basmati rizs',480,'g',0.75],['Mirelit zöldség',480,'g',1.50],['Olívaolaj',30,'ml',0.00],['Méz',60,'g',0.42],['Szójaszósz',60,'ml',0.60],['Fokhagyma',15,'g',0.20],['Fokhagymapor',3,'g',0.00],['Bors',2,'g',0.00]],
+'R3':[['Darált marha 5%',900,'g',7.65],['Penne',420,'g',0.80],['Passata',500,'g',0.80],['Vöröshagyma',200,'g',0.30],['Olívaolaj',20,'ml',0.00],['Parmezán',60,'g',1.50],['Mozzarella',150,'g',1.00],['Fokhagyma',15,'g',0.20],['Oregánó',3,'g',0.00],['Bazsalikom',3,'g',0.00],['Só',8,'g',0.00],['Bors',2,'g',0.00]],
+'R4':[['Csirkemell',1050,'g',5.25],['Burgonya',1500,'g',1.80],['Zsírszegény túró',300,'g',1.50],['Light cheddar',120,'g',1.50],['Mirelit brokkoli/zöldség',300,'g',1.00],['Olívaolaj',20,'ml',0.00],['Fokhagymapor',5,'g',0.00],['Pirospaprika',5,'g',0.00],['Oregánó',3,'g',0.00],['Só',10,'g',0.00],['Bors',2,'g',0.00]],
+'R5':[['Csirkemell',1050,'g',5.25],['Penne',420,'g',0.80],['Passata',500,'g',0.80],['Zsírszegény túró',200,'g',1.00],['Mozzarella',100,'g',0.70],['Mirelit spenót/zöldség',200,'g',0.70],['Olívaolaj',20,'ml',0.00],['Fokhagyma',15,'g',0.20],['Bazsalikom',3,'g',0.00],['Oregánó',3,'g',0.00],['Só',8,'g',0.00],['Bors',2,'g',0.00]]
+};
+// Heti extra alapanyagok: felhasznált mennyiség + fogyasztási költség (nem csomagár).
+var weeklyExtras=[
+['Tej 3,5%',5850,'ml',5.22],['Zabpehely',1740,'g',2.05],['Zsírszegény túró',4350,'g',13.75],
+['Fagyasztott eper/bogyós',1600,'g',6.38],['Banán',2140,'g',4.50],['Mogyoróvaj',365,'g',2.09],['Tojás',5,'db',1.25],
+['Fehérjepor',375,'g',9.00],['Kakaópor',70,'g',1.05],['Chia mag',20,'g',0.20],['Mandula',30,'g',0.30],
+['Kókuszreszelék',20,'g',0.15],['Alma',420,'g',0.76],['Őrölt fahéj',5,'g',0.13],['Kávé',400,'ml',4.00],
+['Basmati rizs',70,'g',0.06],['Mirelit zöldség',250,'g',0.61],['Olívaolaj',15,'ml',0.07],['Szójaszósz',15,'ml',0.08],['Méz',270,'g',1.35]
+];
+var smoothieNames=['Csokis-Banános-Mogyorós','Epres-Túrós-Zabos','Kávés-Tiramisu','Mogyorós-Banános'];
+var oatsNames=['Epres-chia','Kókuszos-mandulás','Csokis-banános','Almás-fahéjas'];
+var dinnerTomi=['Zabkása + mogyoróvaj','Túrós zabkása','Tojásos rizs'];
+var dinnerKitti=['Túró + bogyós','Túrókrém + alma','Tojásos omlett'];
+var dayNames=['Hétfő','Kedd','Szerda','Csütörtök','Péntek','Szombat','Vasárnap'];
+
+
+        function getDayItems(dayIndex, weekRecipes) {
+            var recipe;
+            if (dayIndex >= 0 && dayIndex <= 2) {
+                recipe = weekRecipes[0];
+            } else if (dayIndex >= 3 && dayIndex <= 5) {
+                recipe = weekRecipes[1];
+            } else {
+                recipe = null;
+            }
+            var smoothieIdx = Math.floor(dayIndex / 2) % 4;
+            var oatsIdx = Math.floor(dayIndex / 2) % 4;
+            var dinnerIdx = Math.floor(dayIndex / 3) % 3;
+            return {
+                recipe: recipe,
+                smoothie: smoothieNames[smoothieIdx],
+                oats: oatsNames[oatsIdx],
+                dinnerTomi: dinnerTomi[dinnerIdx],
+                dinnerKitti: dinnerKitti[dinnerIdx]
+            };
+        }
+
+        var timelineView = 'current';
+
+        window.setTimelineView = function(view, btn) {
+            timelineView = view;
+            var buttons = document.querySelectorAll('#timelineToggle button');
+            buttons.forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            updateTimeline();
+        };
+
+        function updateTimeline() {
+            var container = document.getElementById('timelineContent');
+            var weekIndex = parseInt(document.getElementById('weekSelect').value);
+            var currentRecipes = recipeCycle[weekIndex];
+            var today = new Date();
+            var currentDay = today.getDay();
+            var dayIndex = (currentDay === 0) ? 6 : currentDay - 1;
+
+            var daysToShow = [];
+            if (timelineView === 'current') {
+                var blockStart;
+                if (dayIndex >= 0 && dayIndex <= 2) {
+                    blockStart = 0;
+                } else if (dayIndex >= 3 && dayIndex <= 5) {
+                    blockStart = 3;
+                } else {
+                    blockStart = 3;
+                }
+                for (var i = 0; i < 3; i++) {
+                    daysToShow.push(blockStart + i);
+                }
+            } else {
+                for (var i = 0; i < 7; i++) {
+                    daysToShow.push(i);
+                }
+            }
+
+            var html = '';
+            for (var d = 0; d < daysToShow.length; d++) {
+                var dayIdx = daysToShow[d];
+                var items = getDayItems(dayIdx, currentRecipes);
+                var dayName = dayNames[dayIdx];
+                var recipeName = items.recipe ? recipeNames[items.recipe] : 'Maradék / vasárnapi főzés';
+                var smoothie = items.smoothie;
+                var oats = items.oats;
+
+                html += '<div class="timeline-day">';
+                html += '<div class="day-name">📅 ' + dayName + '</div>';
+                html += '<div class="day-items">';
+                html += '<div class="item"><span class="icon">🍽️</span><span class="label">Főétel:</span> ';
+                if (items.recipe) {
+                    html += '<a href="#" onclick="window.showTab(\'receptek\', null); return false;">' + recipeName + '</a>';
+                } else {
+                    html += '<span style="color:#94a3b8;">' + recipeName + '</span>';
+                }
+                html += '</div>';
+                html += '<div class="item"><span class="icon">🥤</span><span class="label">Turmix (Tomi):</span> ';
+                html += '<a href="#" onclick="window.showTab(\'turmixok\', null); return false;">' + smoothie + '</a>';
+                html += '</div>';
+                html += '<div class="item"><span class="icon">🌙</span><span class="label">Oats (Kitti):</span> ';
+                html += '<a href="#" onclick="window.showTab(\'oats\', null); return false;">' + oats + '</a>';
+                html += '</div>';
+                html += '<div class="item"><span class="icon">🌙</span><span class="label">Vacsora (Tomi):</span> ';
+                html += '<a href="#" onclick="window.showTab(\'vacsora\', null); return false;">' + items.dinnerTomi + '</a>';
+                html += '</div>';
+                html += '<div class="item"><span class="icon">🌙</span><span class="label">Vacsora (Kitti):</span> ';
+                html += '<a href="#" onclick="window.showTab(\'vacsora\', null); return false;">' + items.dinnerKitti + '</a>';
+                html += '</div>';
+                html += '</div></div>';
+            }
+            container.innerHTML = html;
+        }
+
+        // ----- HÉTVÁLTÁS -----
+        function getCurrentWeek() {
+            var now = new Date();
+            var start = new Date(2026, 7, 24);
+            var diff = Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));
+            if (diff < 0) diff = 0;
+            return diff % 5;
+        }
+
+        function updateWeek(weekIndex) {
+            var weekNum = parseInt(weekIndex) + 1;
+            document.getElementById('weekDisplay').textContent = weekNum + '. hét';
+
+            var cards = document.querySelectorAll('#receptek .card:not(#weekly-timeline)');
+            var currentRecipes = recipeCycle[weekIndex];
+            for (var i = 0; i < cards.length; i++) {
+                var recipeId = cards[i].dataset.recipe;
+                if (currentRecipes.indexOf(recipeId) !== -1) {
+                    cards[i].style.display = 'block';
+                } else {
+                    cards[i].style.display = 'none';
+                }
+            }
+
+            var listContainer=document.getElementById('shoppingList');
+            var aggregate={};
+            function addShopping(name, amount, unit, cost, group){
+                var key=name.toLowerCase();
+                if(!aggregate[key]) aggregate[key]={name:name,amount:0,unit:unit,cost:0,group:group||'Alapanyagok'};
+                aggregate[key].amount+=amount;
+                aggregate[key].cost+=cost||0;
+            }
+            for(var r=0;r<currentRecipes.length;r++){
+                var arr=recipeShopping[currentRecipes[r]]||[];
+                for(var j=0;j<arr.length;j++){
+                    var it=arr[j];
+                    addShopping(it[0],it[1],it[2],it[3],'Főételek');
+                }
+            }
+            for(var k=0;k<weeklyExtras.length;k++){
+                var ex=weeklyExtras[k];
+                addShopping(ex[0],ex[1],ex[2],ex[3],'Turmix · Oats · Snack · Vacsora');
+            }
+            /* Egységesítés: a főételek és a napi kiegészítők ugyanabba a listába kerülnek. */
+            function fmtAmount(x,unit){
+                if(unit==='db') return Math.round(x)+' db';
+                if(unit==='ml') return (x>=1000 ? (x/1000).toFixed(x%1000===0?0:1).replace('.',',')+' l' : Math.round(x)+' ml');
+                if(x>=1000) return (x/1000).toFixed(x%1000===0?0:2).replace('.',',')+' kg';
+                return Math.round(x)+' g';
+            }
+            var groups={'Hús / főétel':'','Tejtermék / tojás':'','Szárazáru / köret':'','Zöldség / gyümölcs':'','Szósz / egyéb':''};
+            var keys=Object.keys(aggregate);
+            keys.sort(function(a,b){return aggregate[a].name.localeCompare(aggregate[b].name,'hu');});
+            var html='<h4 style="color:#60a5fa;margin-top:12px;">🛒 TELJES HETI BEVÁSÁRLÁS — ÖSSZEVONVA</h4>';
+            html+='<p class="note">Minden hozzávaló egyszer szerepel: ha például 15 g fokhagyma kell az egyik és 15 g a másik főételhez, itt <strong>30 g Fokhagyma</strong> lesz. A mennyiségek a teljes hétre szólnak, 2 főre. Az azonos alapanyagok (pl. fokhagyma, méz, olívaolaj, zsírszegény túró, banán) össze vannak adva.</p>';
+            var order=['Hús / főétel','Tejtermék / tojás','Szárazáru / köret','Zöldség / gyümölcs','Szósz / egyéb'];
+            function category(name){
+                var n=name.toLowerCase();
+                if(n.indexOf('csirk')>=0||n.indexOf('marha')>=0) return 'Hús / főétel';
+                if(n.indexOf('zsírszegény túró')>=0||n.indexOf('túró')>=0||n.indexOf('tej')>=0||n.indexOf('krémsajt')>=0||n.indexOf('cheddar')>=0||n.indexOf('parmezán')>=0||n.indexOf('mozzarella')>=0||n==='tojás') return 'Tejtermék / tojás';
+                if(n.indexOf('zab')>=0||n.indexOf('rizs')>=0||n.indexOf('penne')>=0||n.indexOf('makaróni')>=0||n.indexOf('burgonya')>=0||n.indexOf('fehérjepor')>=0||n.indexOf('mandula')>=0||n.indexOf('chia')>=0||n.indexOf('kókusz')>=0) return 'Szárazáru / köret';
+                if(n.indexOf('zöldség')>=0||n.indexOf('brokkoli')>=0||n.indexOf('spenót')>=0||n.indexOf('eper')>=0||n.indexOf('bogyós')>=0||n.indexOf('banán')>=0||n.indexOf('alma')>=0||n.indexOf('hagyma')>=0) return 'Zöldség / gyümölcs';
+                return 'Szósz / egyéb';
+            }
+            var totalCost=0;
+            for(var oi=0;oi<order.length;oi++){
+                var cat=order[oi], has=false;
+                for(var qi=0;qi<keys.length;qi++){ if(category(aggregate[keys[qi]].name)===cat){has=true;break;} }
+                if(!has) continue;
+                html+='<div style="margin:14px 0 6px;"><strong>'+cat+'</strong></div>';
+                for(var q=0;q<keys.length;q++){
+                    var item=aggregate[keys[q]];
+                    if(category(item.name)!==cat) continue;
+                    totalCost+=item.cost;
+                    var price=item.cost>0 ? '~'+item.cost.toFixed(2).replace('.',',')+' EUR' : '';
+                    html+='<div class="checkbox-item"><input type="checkbox" id="week_'+oi+'_'+q+'" /><label for="week_'+oi+'_'+q+'">'+fmtAmount(item.amount,item.unit)+' '+item.name+'</label><span class="price">'+price+'</span></div>';
+                }
+            }
+            html+='<div style="margin-top:16px;padding-top:12px;border-top:2px solid #f97316;"><strong>Jelenlegi árbecslés a listában:</strong> kb. '+totalCost.toFixed(2).replace('.',',')+' EUR / hét</div>';
+            html+='<p class="note" style="margin-top:10px;">🍳 Vasárnap este: hétfő-szerda főétel. 🍳 Szerda este: csütörtök-szombat főétel. Vasárnap a szombati maradék használható. A fűszerek és olajok költsége csak akkor jelenik meg, ha a jelenlegi árbecslés külön árat rendelt hozzá.</p>';
+            listContainer.innerHTML = html;
+            updateTimeline();
+        }
+
+        window.changeWeek = function(val) {
+            updateWeek(val);
+        };
+
+        // ----- INDÍTÁS -----
+        document.addEventListener('DOMContentLoaded', function() {
+            var currentWeek = getCurrentWeek();
+            var weekSelect = document.getElementById('weekSelect');
+            weekSelect.value = currentWeek;
+            updateWeek(currentWeek);
+
+            // Hétválasztó esemény
+            weekSelect.addEventListener('change', function() {
+                var val = parseInt(this.value);
+                updateWeek(val);
+            });
+        });
+    </script>
+</body>
+</html>
